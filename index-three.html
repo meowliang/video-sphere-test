@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Hello WebXR!</title>
+
+  <!-- three.js -->
+  <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+  <script src="https://unpkg.com/three@0.126.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <video width="100%" height="100%" autoplay loop id="video" style="display:none;">
+        <source src="Cmm-Ar-2.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+      </video>
+
+      <canvas id="sphere"></canvas>
+
+<script>
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //sets camera field of view
+camera.position.setZ(40);
+
+const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector('#sphere'), //sets the camera to the DOM element
+});
+
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+
+
+//add shape
+
+const video = document.getElementById( 'video' );
+const texture = new THREE.VideoTexture( video );
+
+const geometry = new THREE.SphereGeometry( 15, 32, 16 ); 
+const material = new THREE.MeshBasicMaterial( { map: texture } ); 
+const sphere = new THREE.Mesh( geometry, material );
+
+  sphere.position.set(-1, 0, 0);
+
+  scene.add(sphere);
+
+  console.log("sphere added");
+
+
+//add lighting
+
+// const pointLight = new THREE.PointLight(0xffffff); //better for spotlighting
+// pointLight.position.set(20,5,10);
+
+const ambientLight = new THREE.AmbientLight(0xffffff); //better for lighting up everything in the room
+scene.add(ambientLight);
+
+
+//add dragging interaction
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement); //listens for DOM events on the mouse and updates camera accordingly
+
+
+function animate() {
+    requestAnimationFrame( animate );
+    controls.update();
+    renderer.render( scene, camera ); //reduces the need to call renderer over and over again
+}
+
+
+
+animate();
+
+
+</script>
+
+</body>
+</html>
+
+<!-- // 192.168.6.101 view on mobile at IP:Port -->
